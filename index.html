@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Favorite Person 💖</title>
+    <style>
+        :root {
+            --pink-light: #fff0f5;
+            --pink-main: #ffb7c5;
+            --pink-dark: #ff6b8b;
+            --blue-light: #e7f0fd;
+            --blue-main: #94bbe9;
+            --blue-dark: #5c7ca6;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--pink-light) 0%, var(--blue-light) 100%);
+            color: #4a4a4a;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Canvas for Falling Blossoms */
+        #blossom-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header {
+            margin-top: 30px;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--pink-dark);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
+        }
+
+        p.subtitle {
+            color: var(--blue-dark);
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        /* Interactive Card Style */
+        .card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(148, 187, 233, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        h2 {
+            color: var(--blue-dark);
+            margin-top: 0;
+        }
+
+        /* Custom Music Player */
+        .audio-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        select, button {
+            padding: 12px 24px;
+            border-radius: 25px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        select {
+            background-color: white;
+            border: 2px solid var(--blue-main);
+            color: var(--blue-dark);
+            font-weight: 600;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--pink-main) 0%, var(--pink-dark) 100%);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 107, 139, 0.3);
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 107, 139, 0.5);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Mood Selector Buttons */
+        .mood-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .mood-btn {
+            background: white;
+            border: 2px solid var(--pink-main);
+            color: var(--pink-dark);
+            padding: 10px 20px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .mood-btn:hover {
+            background: var(--pink-main);
+            color: white;
+        }
+
+        .mood-display {
+            margin-top: 25px;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            min-height: 60px;
+            color: #555;
+            font-weight: 500;
+            padding: 15px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.5);
+        }
+
+        /* Comfort Message Section */
+        .comfort-box {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #444;
+            font-style: italic;
+            margin: 20px 0;
+            padding: 20px;
+            border-left: 4px solid var(--pink-dark);
+            background: rgba(255, 183, 197, 0.1);
+            border-radius: 0 15px 15px 0;
+        }
+
+        /* Photo Dump Grid */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .photo-item {
+            width: 100%;
+            height: 180px;
+            background-color: var(--blue-light);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 4px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-placeholder {
+            font-size: 2.5rem;
+            color: var(--blue-main);
+        }
+
+        .file-input-label {
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        /* Mini Game Styles */
+        #game-area {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(to bottom, #ffffff, var(--blue-light));
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            border: 2px dashed var(--blue-main);
+            margin-top: 15px;
+            cursor: crosshair;
+        }
+
+        .catchable-heart {
+            position: absolute;
+            font-size: 2rem;
+            cursor: pointer;
+            user-select: none;
+            animation: floatUp 4s linear forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(320px) scale(0.8); opacity: 1; }
+            100% { transform: translateY(-50px) scale(1.2); opacity: 0; }
+        }
+
+        .score-board {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--blue-dark);
+            margin-bottom: 10px;
+        }
+
+        footer {
+            margin-top: 50px;
+            margin-bottom: 30px;
+            color: var(--blue-dark);
+            font-size: 0.9rem;
+        }
+
+        .heart-icon {
+            color: var(--pink-dark);
+            display: inline-block;
+            animation: heartbeat 1.2s infinite;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            20% { transform: scale(1.1); }
+            40% { transform: scale(1); }
+            60% { transform: scale(1.15); }
+            80%, 100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="blossom-canvas"></canvas>
+
+    <div class="container">
+        <header>
+            <h1>Hey Beautiful <span class="heart-icon">💖</span></h1>
+            <p class="subtitle">Whenever you miss me, I am right here inside this page.</p>
+        </header>
+
+        <section class="card">
+            <h2>🎵 Our Soundtrack</h2>
+            <div class="audio-container">
+                <select id="track-select" onchange="changeTrack()">
+                    <option value="http://googleusercontent.com/file_content/0">Jersey Club Slowed Mix</option>
+                    <option value="http://googleusercontent.com/file_content/1" selected>Joy Again - Looking Out for You</option>
+                    <option value="http://googleusercontent.com/file_content/2">JVKE, Annika Wells - her</option>
+                </select>
+                <audio id="main-player" controls loop style="width: 100%; max-width: 400px;">
+                    <source id="audio-source" src="http://googleusercontent.com/file_content/1" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>💡 How are you feeling right now?</h2>
+            <div class="mood-buttons">
+                <button class="mood-btn" onclick="getMoodResponse('sad')">😢 Sad / Lonely</button>
+                <button class="mood-btn" onclick="getMoodResponse('angry')">😡 Annoyed / Grumpy</button>
+                <button class="mood-btn" onclick="getMoodResponse('happy')">😊 Happy / Thinking of You</button>
+                <button class="mood-btn" onclick="getMoodResponse('tired')">😴 Tired / Exhausted</button>
+            </div>
+            <div id="mood-text" class="mood-display">Click a button above to let me talk to you... ✨</div>
+        </section>
+
+        <section class="card">
+            <h2>💌 A Reminder For You</h2>
+            <div id="comfort-message" class="comfort-box">
+                "Close your eyes and take a deep breath. I might be a few miles away, but you have 100% of my heart, always."
+            </div>
+            <button onclick="generateComfortMessage()">Get another hug 🌸</button>
+        </section>
+
+        <section class="card">
+            <h2>📸 Our Photo Dump</h2>
+            <p style="font-size: 0.9rem; color: #777; margin-top: -10px;">Upload favorite memories of us to keep them here!</p>
+            
+            <label class="file-input-label">
+                <span style="background-color: var(--blue-main); color: white;" class="mood-btn">Add New Photo ✨</span>
+                <input type="file" id="image-upload" accept="image/*" multiple style="display: none;" onchange="handleImageUpload(event)">
+            </label>
+
+            <div class="photo-grid" id="gallery-grid">
+                <div class="photo-item" onclick="alert('Add your first real picture using the button above!')"><span class="photo-placeholder">👩‍❤️‍👨</span></div>
+                <div class="photo-item" onclick="alert('Keep adding memories to build our personal wall!')"><span class="photo-placeholder">🍕</span></div>
+                <div class="photo-item" onclick="alert('Distance means nothing when someone means everything.')"><span class="photo-placeholder">✈️</span></div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>🎮 Catch My Love!</h2>
+            <div class="score-board">Hearts Caught: <span id="score">0</span></div>
+            <div id="game-area">
+                <p style="text-align: center; color: var(--blue-dark); padding-top: 120px;" id="game-start-text">Click inside here to start catching falling love!</p>
+            </div>
+        </section>
+
+        <footer>
+            Made with all the love in the universe, just for you. <span class="heart-icon">💝</span>
+        </footer>
+    </div>
+
+    <script>
+        // --- CHERRY BLOSSOM BACKGROUND ENGINE ---
+        const canvas = document.getElementById('blossom-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const numBlossoms = 40;
+        const blossoms = [];
+
+        class Blossom {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * -height - 20;
+                this.size = Math.random() * 8 + 6;
+                this.speedY = Math.random() * 1.5 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.opacity = Math.random() * 0.5 + 0.4;
+                this.rotation = Math.random() * 360;
+                this.spinSpeed = Math.random() * 2 - 1;
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                this.rotation += this.spinSpeed;
+
+                if (this.y > height) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation * Math.PI / 180);
+                ctx.fillStyle = `rgba(255, 183, 197, ${this.opacity})`; // Soft Pink Cherry color
+                
+                // Draw a simple petal shape
+                ctx.beginPath();
+                ctx.ellipse(0, 0, this.size, this.size / 1.5, 0, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // Petal indent detail
+                ctx.fillStyle = `rgba(255, 107, 139, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(-this.size/2, 0, 1, 0, 2 * Math.PI);
+                ctx.fill();
+
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < numBlossoms; i++) {
+            blossoms.push(new Blossom());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            blossoms.forEach(b => {
+                b.update();
+                b.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+
+        // --- MUSIC PLAYER ---
+        function changeTrack() {
+            const player = document.getElementById('main-player');
+            const source = document.getElementById('audio-source');
+            const select = document.getElementById('track-select');
+            
+            source.src = select.value;
+            player.load();
+            player.play().catch(e => console.log("Audio needs user interaction to start auto-playing."));
+        }
+
+
+        // --- MOOD DYNAMIC MESSAGES ---
+        function getMoodResponse(mood) {
+            const displayText = document.getElementById('mood-text');
+            let text = "";
+
+            if (mood === 'sad') {
+                text = "🌸 I wish I was there to wrap my arms around you right now. Remember that this distance is only temporary, but my love for you is forever. Cry if you need to, but remember you're the strongest girl I know. Text me 'bubble' right now and I'll call you as soon as I can!";
+            } else if (mood === 'angry') {
+                text = "😤 Did someone mess with my favorite girl? Take a deep breath! Don't let them ruin your bright energy. Punch a pillow, listen to the loud mix up there, and remember that I'm completely on your team. Always.";
+            } else if (mood === 'happy') {
+                text = "🥰 Ahhh seeing you happy makes my entire universe light up! I'm probably thinking about your beautiful smile right at this exact second too. Save some of that amazing energy for when we talk later!";
+            } else if (mood === 'tired') {
+                text = "🥱 You worked so hard today, my love. Please put your phone down soon, tuck yourself in comfortably, and get some sweet rest. I'll be waiting in your dreams. Sleep well, beautiful.";
+            }
+
+            displayText.innerHTML = text;
+        }
+
+
+        // --- 20+ RANDOM COMFORT MESSAGES ---
+        const comfortMessages = [
+            "Close your eyes and take a deep breath. I might be a few miles away, but you have 100% of my heart, always.",
+            "You are my absolute favorite thought at any moment of the day.",
+            "Distance only proves that our love is bigger than any map.",
+            "Hey, you are doing incredibly well. I am so proud of you.",
+            "No matter how far apart we are, we look up at the exact same moon every single night.",
+            "I love you more than all the stars in the night sky.",
+            "You're my beginning, middle, and end. Distance can't touch what we have.",
+            "I'm sending you the biggest, warmest virtual hug right now. Can you feel it?",
+            "You're worth every single mile between us.",
+            "My love for you grows bigger with every tick of the clock.",
+            "No matter what happens today, you are completely adored by me.",
+            "You're my peace in this crazy world.",
+            "Counting down the seconds until I can hold your hand for real again.",
+            "I am always right here, cheering you on from afar.",
+            "You are beautiful, you are loved, and you are mine.",
+            "Just a little reminder that you mean the complete absolute world to me.",
+            "Thinking about your laugh is my instant cure for a bad day.",
+            "We are one day closer to never having to say goodbye at airports again.",
+            "You make my heart skip a beat even when you're thousands of miles away.",
+            "Be kind to yourself today, beautiful. You deserve the world.",
+            "My favorite place to be is inside your thoughts.",
+            "Never forget that my love for you is stubborn and it is never going anywhere."
+        ];
+
+        function generateComfortMessage() {
+            const msgBox = document.getElementById('comfort-message');
+            const randomIdx = Math.floor(Math.random() * comfortMessages.length);
+            msgBox.innerHTML = `"${comfortMessages[randomIdx]}"`;
+        }
+
+
+        // --- PHOTO DUMP SYSTEM ---
+        function handleImageUpload(event) {
+            const files = event.target.files;
+            const grid = document.getElementById('gallery-grid');
+
+            for(let i=0; i<files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'photo-item';
+                    
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    
+                    div.appendChild(img);
+                    grid.insertBefore(div, grid.firstChild);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+
+        // --- MINI GAME: CATCH THE LOVE ---
+        const gameArea = document.getElementById('game-area');
+        const scoreSpan = document.getElementById('score');
+        const startText = document.getElementById('game-start-text');
+        let score = 0;
+        let gameStarted = false;
+
+        gameArea.addEventListener('click', function() {
+            if (!gameStarted) {
+                gameStarted = true;
+                startText.style.display = 'none';
+                setInterval(spawnHeart, 800);
+            }
+        });
+
+        function spawnHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'catchable-heart';
+            
+            const heartsArray = ['❤️', '💖', '💝', '💗', '💕'];
+            heart.innerText = heartsArray[Math.floor(Math.random() * heartsArray.length)];
+            
+            // Random horizontal placement inside game window
+            const maxX = gameArea.clientWidth - 40;
+            heart.style.left = Math.random() * maxX + 'px';
+            
+            // Handle clicking the heart
+            heart.addEventListener('mousedown', function(e) {
+                score++;
+                scoreSpan.innerText = score;
+                heart.remove();
+                e.stopPropagation(); // prevent resetting anything
+            });
+
+            gameArea.appendChild(heart);
+
+            // Clean up old hearts that floated away
+            setTimeout(() => {
+                if (heart.parentNode === gameArea) {
+                    heart.remove();
+                }
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
