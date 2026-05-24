@@ -285,12 +285,12 @@
             <h2>🎵 Our Soundtrack</h2>
             <div class="audio-container">
                 <select id="track-select" onchange="changeTrack()">
-                    <option value="http://googleusercontent.com/file_content/0">Jersey Club Slowed Mix</option>
-                    <option value="http://googleusercontent.com/file_content/1" selected>Joy Again - Looking Out for You</option>
-                    <option value="http://googleusercontent.com/file_content/2">JVKE, Annika Wells - her</option>
+                    <option value="track1.mp3">Jersey Club Slowed Mix</option>
+                    <option value="track2.mp3" selected>Joy Again - Looking Out for You</option>
+                    <option value="track3.mp3">JVKE, Annika Wells - her</option>
                 </select>
                 <audio id="main-player" controls loop style="width: 100%; max-width: 400px;">
-                    <source id="audio-source" src="http://googleusercontent.com/file_content/1" type="audio/mpeg">
+                    <source id="audio-source" src="track2.mp3" type="audio/mpeg">
                     Your browser does not support the audio element.
                 </audio>
             </div>
@@ -387,14 +387,12 @@
                 ctx.save();
                 ctx.translate(this.x, this.y);
                 ctx.rotate(this.rotation * Math.PI / 180);
-                ctx.fillStyle = `rgba(255, 183, 197, ${this.opacity})`; // Soft Pink Cherry color
+                ctx.fillStyle = `rgba(255, 183, 197, ${this.opacity})`;
                 
-                // Draw a simple petal shape
                 ctx.beginPath();
                 ctx.ellipse(0, 0, this.size, this.size / 1.5, 0, 0, 2 * Math.PI);
                 ctx.fill();
                 
-                // Petal indent detail
                 ctx.fillStyle = `rgba(255, 107, 139, ${this.opacity})`;
                 ctx.beginPath();
                 ctx.arc(-this.size/2, 0, 1, 0, 2 * Math.PI);
@@ -529,21 +527,18 @@
             const heartsArray = ['❤️', '💖', '💝', '💗', '💕'];
             heart.innerText = heartsArray[Math.floor(Math.random() * heartsArray.length)];
             
-            // Random horizontal placement inside game window
             const maxX = gameArea.clientWidth - 40;
             heart.style.left = Math.random() * maxX + 'px';
             
-            // Handle clicking the heart
             heart.addEventListener('mousedown', function(e) {
                 score++;
                 scoreSpan.innerText = score;
                 heart.remove();
-                e.stopPropagation(); // prevent resetting anything
+                e.stopPropagation();
             });
 
             gameArea.appendChild(heart);
 
-            // Clean up old hearts that floated away
             setTimeout(() => {
                 if (heart.parentNode === gameArea) {
                     heart.remove();
@@ -552,4 +547,5 @@
         }
     </script>
 </body>
-</html>
+                </html>
+                    
